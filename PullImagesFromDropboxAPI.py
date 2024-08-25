@@ -29,7 +29,6 @@ class PullImagesFromDropboxAPI:
     def pull_images(self, access_token, folder_path, iteration_index):
         print(f"Starting pull_images with folder_path: {folder_path}, iteration_index: {iteration_index}")
         
-        # Remove 'Bearer' if it's included in the access_token
         access_token = access_token.replace("Bearer", "").strip()
         
         headers = {
@@ -37,7 +36,6 @@ class PullImagesFromDropboxAPI:
             'Content-Type': 'application/json'
         }
         
-        # List files in the specified folder
         list_files_payload = json.dumps({"path": folder_path})
         try:
             print(f"Sending request to list files at: {self.api_url}")
@@ -52,16 +50,13 @@ class PullImagesFromDropboxAPI:
         if not files:
             return (None, "No files found in the specified folder.")
         
-        # Ensure the iteration index is within bounds
         if iteration_index >= len(files):
             return (None, f"Iteration index {iteration_index} out of bounds. Max index: {len(files) - 1}")
         
-        # Get the file path of the specified image
         file_path = files[iteration_index].get("path_lower")
         file_name = files[iteration_index].get("name")
         print(f"Selected file path: {file_path}")
         
-        # Download the image
         download_headers = {
             'Authorization': f'Bearer {access_token}',
             'Dropbox-API-Arg': json.dumps({"path": file_path})
@@ -73,11 +68,10 @@ class PullImagesFromDropboxAPI:
         except requests.exceptions.RequestException as e:
             return (None, f"Error downloading image: {str(e)}")
         
-        # Process the image
         try:
             image = Image.open(BytesIO(download_response.content))
-            image = ImageOps.exif_transpose(image)  # Correct orientation based on EXIF data
-            image = image.convert("RGB")  # Ensure the image is in RGB format
+            image = ImageOps.exif_transpose(image)
+            image = image.convert("RGB")
             print(f"Image processed. Mode: {image.mode}, Size: {image.size}")
             
             image_np = np.array(image).astype(np.float32) / 255.0
