@@ -3,9 +3,8 @@ from .FetchTokenFromDropbox import FetchTokenFromDropbox
 from .PullImagesFromDropboxAPI import PullImagesFromDropboxAPI
 from .PostPromptsToDropboxAPI import PostPromptsToDropboxAPI
 from .PullVideosFromDropboxAPI import PullVideosFromDropboxAPI
-from .VideoCombineAndExportToDropboxAPI import VideoCombineAndExportToDropboxAPI  # Add this line
-from .PullTextFromDropboxAPI import PullTextFromDropboxAPI  # Add this line
-
+from .VideoCombineAndExportToDropboxAPI import VideoCombineAndExportToDropboxAPI
+from .PullTextFromDropboxAPI import PullTextFromDropboxAPI
 
 # Register the nodes
 NODE_CLASS_MAPPINGS = {
@@ -14,7 +13,7 @@ NODE_CLASS_MAPPINGS = {
     "PullImagesFromDropboxAPI": PullImagesFromDropboxAPI,
     "PostPromptsToDropboxAPI": PostPromptsToDropboxAPI,
     "PullVideosFromDropboxAPI": PullVideosFromDropboxAPI,
-    "VideoCombineAndExportToDropboxAPI": VideoCombineAndExportToDropboxAPI  # Add this line
+    "VideoCombineAndExportToDropboxAPI": VideoCombineAndExportToDropboxAPI,  # Add comma here
     "PullTextFromDropboxAPI": PullTextFromDropboxAPI
 }
 
@@ -24,6 +23,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "PullImagesFromDropboxAPI": "Pull Images From Dropbox API",
     "PostPromptsToDropboxAPI": "Post Prompts To Dropbox API",
     "PullVideosFromDropboxAPI": "Pull Videos From Dropbox API",
-    "VideoCombineAndExportToDropboxAPI": "Video Combine And Export To Dropbox API"  # Add this line
+    "VideoCombineAndExportToDropboxAPI": "Video Combine And Export To Dropbox API",  # Add comma here
     "PullTextFromDropboxAPI": "Pull Text From DropboxAPI"
 }
