@@ -15,7 +15,7 @@ class VideoCombineAndExportToDropboxAPI:
         return {
             "required": {
                 "frame_rate": ("FLOAT", {"default": 30, "min": 1, "step": 1}),
-                "format": (["video/mp4", "video/webm"],),
+                "format": (["video/mp4", "video/webm", "image/gif"],),
                 "filename_prefix": ("STRING", {"default": "output"}),
                 "save_output": ("BOOLEAN", {"default": True}),
                 "api_key": ("STRING", {"default": "", "multiline": False}),
@@ -42,7 +42,7 @@ class VideoCombineAndExportToDropboxAPI:
             dropbox_url = self.upload_to_dropbox(output_path, dropbox_folder_path, api_key)
             return (dropbox_url,)
         else:
-            return ("Video not saved, no Dropbox upload performed.",)
+            return ("File not saved, no Dropbox upload performed.",)
 
     def combine_video(self, images, frame_rate, format, filename_prefix, save_output, audio=None):
         output_dir = folder_paths.get_output_directory() if save_output else folder_paths.get_temp_directory()
@@ -50,6 +50,14 @@ class VideoCombineAndExportToDropboxAPI:
         filename = f"{filename_prefix}_{timestamp}.{format.split('/')[-1]}"
         output_path = os.path.join(output_dir, filename)
 
+        if format == "image/gif":
+            self.create_gif(images, output_path, frame_rate)
+        else:
+            self.create_video(images, frame_rate, format, output_path, audio)
+
+        return output_path
+
+    def create_video(self, images, frame_rate, format, output_path, audio=None):
         ffmpeg_path = "ffmpeg"  # Ensure ffmpeg is in your system PATH
         args = [
             ffmpeg_path, "-y",
@@ -78,7 +86,15 @@ class VideoCombineAndExportToDropboxAPI:
         if process.returncode != 0:
             raise RuntimeError(f"FFmpeg failed with error code {process.returncode}")
 
-        return output_path
+    def create_gif(self, images, output_path, frame_rate):
+        image_list = [Image.fromarray((self.tensor_to_bytes(img)).astype('uint8')) for img in images]
+        image_list[0].save(
+            output_path,
+            save_all=True,
+            append_images=image_list[1:],
+            duration=1000 / frame_rate,
+            loop=0,
+        )
 
     def upload_to_dropbox(self, local_file_path, dropbox_folder_path, api_key):
         dropbox_path = f"{dropbox_folder_path.rstrip('/')}/{os.path.basename(local_file_path)}"
